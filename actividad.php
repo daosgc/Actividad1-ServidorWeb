@@ -11,31 +11,68 @@
         <h5 class="card-title">Actividad Nº 1</h5>
         <p class="card-text">
           Aplicación para calcular el pago de una factura según el registro de horas
-          de trabajo de un desarrollador de software. Pueden ser horas normales o extras.
+          de trabajo de un desarrollador de software. De Lunes a Viernes el costo por
+          hora es de $8 y fin se semana el costo es de $15.
           <br>
           <b>Formato</b> <i>diaSemana-horaInicio-HoraFin</i>
           <br>
-          <b>Ejemplo</b> <i>Lun-08:00-13:00;Mar-17:00-19:00</i>
+          <b>Ejemplo</b> <i>Lun-08:00-13:00;Dom-17:00-19:00</i>
         </p>
       </div>
     </div>
     <?php
-      $costo_hora = 8;
-      $costo_hora_extra = 10;
+      $registros_usuario = "Lun-08:00-13:00;Dom-17:00-19:00";
+      ObtenerCostoFactura($registros_usuario);
 
-      $primera_variable = "Hola Mundo";
-      print("Aqui pondremos el codigo php. $primera_variable");
-
-      function EjemploCompleto ($valor, &$refe, $predet = "dos") {
-        $refe = "Juntos, ".$valor. " para ".$predet;
-        return $predet;
+      function ObtenerRegistroPorDia ($registro)
+      {
+        $rangosHoras = explode(";", $registro);
+        return $rangosHoras;
       }
 
-      $bebida = "café";
-      $cuantos = EjemploCompleto($bebida, $cad);
+      function ObtenerCostoHoraSegunDia($dia)
+      {
+        switch ($dia) {
+          case $dia === 'Sab':
+            $costo_hora = 15;
+            break;
+          case $dia === 'Dom':
+            $costo_hora = 15;
+            break;
+          default:
+            $costo_hora = 8;
+            break;
+        }
+        return $costo_hora;
+      }
 
-      echo $cad."<br>\n"; //Escribe “Juntos, café para dos”
-      echo $cuantos."<br>\n"; //Escribe “dos”
+      function ObtenerHoras($inicio, $fin)
+      {
+        $fecha_inicio = "2020-12-08".$inicio;
+        $fecha_fin = "2020-12-08".$fin;
+        $timestamp_inicio = strtotime($fecha_inicio);
+        $timestamp_fin = strtotime($fecha_fin);
+        $hour = abs($timestamp_fin - $timestamp_inicio)/(60*60);
+        return $hour;
+      }
+
+      function ObtenerCostoFactura($data)
+      {
+        $registros_dia = ObtenerRegistroPorDia($data);
+        $costo_factura = 0;
+        foreach ($registros_dia as &$registro) {
+          $data_formateada = explode("-", $registro);
+          $dia = $data_formateada[0];
+          $hora_inicio = $data_formateada[1];
+          $hora_final = $data_formateada[2];
+          $costo_hora = ObtenerCostoHoraSegunDia($dia);
+          $horas = ObtenerHoras($hora_inicio, $hora_final);
+          $costo_dia = $horas * $costo_hora;
+          $costo_factura = $costo_dia + $costo_factura;
+          echo "El costo por dia:".$costo_dia."<br>\n";
+        }
+        echo "Tienes una factura de:".$costo_factura."<br>\n";
+      }
     ?>
   </body>
 </html>
